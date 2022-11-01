@@ -11,9 +11,9 @@ parameters = {
 }
 
 
-def get_iss_vin(lat, long):
-    vin = (lat - MY_LAT, long - MY_LONG)
-    return vin
+def get_iss_vis(lat, long):
+    if (lat + 5 == MY_LAT or lat - 5 == MY_LAT) and (long + 5 == MY_LONG or long - 5 == MY_LONG):
+        return True
 
 
 def get_hours():
@@ -58,11 +58,6 @@ running = True
 while running:
     iss_latitude = get_iss()['lat']
     iss_longitude = get_iss()['long']
-    iss_vinc = get_iss_vin(iss_latitude, iss_longitude)
-    if (iss_vinc[0] < 5 or iss_vinc[0] > -5) and (iss_vinc[1] < 5 or iss_vinc[1] > -5):
-        iss_is_near = True
-    else:
-        iss_is_near = False
 
     sunrise = get_hours()['sunrise']
     sunset = get_hours()['sunset']
@@ -71,12 +66,12 @@ while running:
     time_now_hour = time_now.hour
     email_sent = False
 
-    if (time_now_hour >= sunset or time_now_hour <= sunrise) and iss_is_near and not email_sent:
+    while get_iss_vis(iss_latitude, iss_longitude) and not email_sent:
         # print('ISS is near and its night!')
         sendmail('joachim.lehmann@googlemail.com', 'The ISS is nearby and its night!')
         # set mail sent to True
         email_sent = True
-    else:
-        print(f'ISS at lat:{iss_latitude}, long:{iss_longitude}', end='\r', flush=True)
-        email_sent = False
+
+    print(f'ISS at lat:{iss_latitude}, long:{iss_longitude}', end='\r', flush=True)
+    email_sent = False
     time.sleep(2)
