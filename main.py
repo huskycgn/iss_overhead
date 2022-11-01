@@ -69,10 +69,13 @@ while running:
 
     time_now = datetime.now()
     time_now_hour = time_now.hour
+    email_sent = False
 
-    if (time_now_hour >= sunset or time_now_hour <= sunrise) and iss_is_near:
+    if (time_now_hour >= sunset or time_now_hour <= sunrise) and iss_is_near and not email_sent:
         # print('ISS is near and its night!')
         sendmail('joachim.lehmann@googlemail.com', 'The ISS is nearby and its night!')
+        email_sent = True
     else:
-        print(f'ISS at lat:{iss_latitude}, long:{iss_longitude}')
-    time.sleep(30)
+        print(f'ISS at lat:{iss_latitude}, long:{iss_longitude}', end='\r', flush=True)
+        email_sent = False
+    time.sleep(2)
